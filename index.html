@@ -4,7 +4,182 @@
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
  <title>Sports Tracker - Admin Interface</title>
- <link rel="stylesheet" href="draft1.css">
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f7f6;
+    color: #333;
+}
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+h1, h2, h3, h4 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.card {
+    background-color: #ecf0f1;
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+.match-setup, .scoring-panel {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.team-setup, .team-controls {
+    flex: 1;
+    min-width: 300px;
+    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.form-group {
+    margin-bottom: 15px;
+}
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+select, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+.btn-secondary {
+    background-color: #7f8c8d;
+    color: white;
+}
+.btn-secondary:hover {
+    background-color: #626c6d;
+}
+.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+}
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+.hidden {
+    display: none;
+}
+.game-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+.score-display {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 30px;
+    background-color: #f2f2f2;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.team-score {
+    text-align: center;
+}
+.team-label {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #34495e;
+}
+.score {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #e67e22;
+}
+.period-info {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #7f8c8d;
+}
+.score-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin: 5px;
+}
+.score-btn-plus {
+    background-color: #27ae60;
+    color: white;
+}
+.score-btn-plus:hover {
+    background-color: #229a56;
+}
+.score-btn-minus {
+    background-color: #f39c12;
+    color: white;
+}
+.score-btn-minus:hover {
+    background-color: #e08e0b;
+}
+.player-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+.player-stats-table th, .player-stats-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+.player-stats-table th {
+    background-color: #f8f8f8;
+    font-weight: bold;
+}
+.player-name {
+    font-weight: bold;
+}
+.player-stats-container {
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+</style>
  <script type="module">
      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
      import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
