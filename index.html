@@ -81,6 +81,8 @@
 
                if (gameState.isActive) {
                    document.getElementById('game-panel').classList.remove('hidden');
+                   // Ensure buttons are created when game panel becomes visible
+                   setTimeout(createScoringButtons, 50);
                } else {
                    document.getElementById('game-panel').classList.add('hidden');
                }
@@ -217,6 +219,12 @@
            const team1Buttons = document.getElementById('team1-buttons');
            const team2Buttons = document.getElementById('team2-buttons');
 
+           // Check if containers exist, if not wait a bit and try again
+           if (!team1Buttons || !team2Buttons) {
+               console.log('Button containers not found, retrying...');
+               setTimeout(createScoringButtons, 100);
+               return;
+           }
 
            team1Buttons.innerHTML = '';
            team2Buttons.innerHTML = '';
@@ -680,7 +688,15 @@
            console.log('Firebase Realtime Database subscription active. Listening to /currentGame');
            
            // Initialize buttons immediately so they're ready when page loads
-           createScoringButtons();
+           // Use setTimeout to ensure DOM is fully ready
+           setTimeout(function() {
+               createScoringButtons();
+           }, 50);
+           
+           // Also ensure buttons are created after a short delay as backup
+           setTimeout(function() {
+               createScoringButtons();
+           }, 200);
        });
    </script>
 </head>
