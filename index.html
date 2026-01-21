@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
    <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
    <title>Sports Tracker - Admin Interface</title>
    <link rel="stylesheet" href="draft1.css">
    <script type="module">
@@ -234,6 +234,45 @@
            }
 
 
+           function createStatButtonGroup(label, team, statType) {
+               const container = document.createElement('div');
+               container.style.display = 'flex';
+               container.style.alignItems = 'center';
+               container.style.gap = '5px';
+               container.style.marginBottom = '5px';
+               
+               const labelSpan = document.createElement('span');
+               labelSpan.textContent = label + ':';
+               labelSpan.style.fontWeight = 'bold';
+               labelSpan.style.minWidth = '100px';
+               labelSpan.setAttribute('name', statType);
+               
+               const minusBtn = document.createElement('button');
+               minusBtn.textContent = '-';
+               minusBtn.className = 'score-btn score-btn-minus';
+               minusBtn.style.padding = '5px 10px';
+               minusBtn.onclick = () => {
+                   const p = getSelectedPlayer(team);
+                   if (p) addPlayerStat(team, p, statType, -1);
+               };
+               
+               const plusBtn = document.createElement('button');
+               plusBtn.textContent = '+';
+               plusBtn.className = 'score-btn score-btn-plus';
+               plusBtn.style.padding = '5px 10px';
+               plusBtn.onclick = () => {
+                   const p = getSelectedPlayer(team);
+                   if (p) addPlayerStat(team, p, statType, 1);
+               };
+               
+               container.appendChild(labelSpan);
+               container.appendChild(minusBtn);
+               container.appendChild(plusBtn);
+               
+               return container;
+           }
+
+
            const getSelectedPlayer = (team) => {
                const select = document.getElementById(`${team}-player-select`);
                return select && select.value ? select.value : null;
@@ -242,26 +281,18 @@
 
            team1Buttons.appendChild(createScoreButton('+1 Pt', 'team1', 1));
            team1Buttons.appendChild(createScoreButton('-1 Pt', 'team1', -1, false));
-           const t1Serve = document.createElement('button'); t1Serve.textContent = 'Serve'; t1Serve.className = 'score-btn score-btn-stat'; t1Serve.onclick = () => { const p = getSelectedPlayer('team1'); if (p) addPlayerStat('team1', p, 'serve'); };
-           const t1Ace = document.createElement('button'); t1Ace.textContent = 'Service Ace'; t1Ace.className = 'score-btn score-btn-stat'; t1Ace.onclick = () => { const p = getSelectedPlayer('team1'); if (p) addPlayerStat('team1', p, 'ace'); };
-           const t1Block = document.createElement('button'); t1Block.textContent = 'Block'; t1Block.className = 'score-btn score-btn-stat'; t1Block.onclick = () => { const p = getSelectedPlayer('team1'); if (p) addPlayerStat('team1', p, 'block'); };
-           const t1Spike = document.createElement('button'); t1Spike.textContent = 'Spike'; t1Spike.className = 'score-btn score-btn-stat'; t1Spike.onclick = () => { const p = getSelectedPlayer('team1'); if (p) addPlayerStat('team1', p, 'spike'); };
-           team1Buttons.appendChild(t1Serve);
-           team1Buttons.appendChild(t1Ace);
-           team1Buttons.appendChild(t1Block);
-           team1Buttons.appendChild(t1Spike);
+           team1Buttons.appendChild(createStatButtonGroup('Serve', 'team1', 'serve'));
+           team1Buttons.appendChild(createStatButtonGroup('Service Ace', 'team1', 'ace'));
+           team1Buttons.appendChild(createStatButtonGroup('Block', 'team1', 'block'));
+           team1Buttons.appendChild(createStatButtonGroup('Spike', 'team1', 'spike'));
 
 
            team2Buttons.appendChild(createScoreButton('+1 Pt', 'team2', 1));
            team2Buttons.appendChild(createScoreButton('-1 Pt', 'team2', -1, false));
-           const t2Serve = document.createElement('button'); t2Serve.textContent = 'Serve'; t2Serve.className = 'score-btn score-btn-stat'; t2Serve.onclick = () => { const p = getSelectedPlayer('team2'); if (p) addPlayerStat('team2', p, 'serve'); };
-           const t2Ace = document.createElement('button'); t2Ace.textContent = 'Service Ace'; t2Ace.className = 'score-btn score-btn-stat'; t2Ace.onclick = () => { const p = getSelectedPlayer('team2'); if (p) addPlayerStat('team2', p, 'ace'); };
-           const t2Block = document.createElement('button'); t2Block.textContent = 'Block'; t2Block.className = 'score-btn score-btn-stat'; t2Block.onclick = () => { const p = getSelectedPlayer('team2'); if (p) addPlayerStat('team2', p, 'block'); };
-           const t2Spike = document.createElement('button'); t2Spike.textContent = 'Spike'; t2Spike.className = 'score-btn score-btn-stat'; t2Spike.onclick = () => { const p = getSelectedPlayer('team2'); if (p) addPlayerStat('team2', p, 'spike'); };
-           team2Buttons.appendChild(t2Serve);
-           team2Buttons.appendChild(t2Ace);
-           team2Buttons.appendChild(t2Block);
-           team2Buttons.appendChild(t2Spike);
+           team2Buttons.appendChild(createStatButtonGroup('Serve', 'team2', 'serve'));
+           team2Buttons.appendChild(createStatButtonGroup('Service Ace', 'team2', 'ace'));
+           team2Buttons.appendChild(createStatButtonGroup('Block', 'team2', 'block'));
+           team2Buttons.appendChild(createStatButtonGroup('Spike', 'team2', 'spike'));
        }
 
 
@@ -271,8 +302,12 @@
            } else {
                gameState.teams[team].score += points;
               
-               if (playerName && points > 0 && gameState.players[team] && gameState.players[team][playerName]) {
-                   gameState.players[team][playerName].points = (gameState.players[team][playerName].points || 0) + points;
+               // Sync player points for both positive and negative point changes
+               if (playerName && gameState.players[team] && gameState.players[team][playerName]) {
+                   const currentPoints = gameState.players[team][playerName].points || 0;
+                   const newPoints = currentPoints + points;
+                   // Ensure player points don't go below 0
+                   gameState.players[team][playerName].points = Math.max(0, newPoints);
                }
            }
            updateGameDisplay();
@@ -280,22 +315,50 @@
        }
 
 
-       function addPlayerStat(team, playerName, stat) {
+       function addPlayerStat(team, playerName, stat, increment = 1) {
            if (!gameState.players[team] || !gameState.players[team][playerName]) return;
            const p = gameState.players[team][playerName];
+           
            if (stat === 'serve') {
-               p.serves++;
-               gameState.stats[team].serves++;
+               p.serves = (p.serves || 0) + increment;
+               if (p.serves < 0) p.serves = 0;
+               gameState.stats[team].serves = (gameState.stats[team].serves || 0) + increment;
+               if (gameState.stats[team].serves < 0) gameState.stats[team].serves = 0;
            } else if (stat === 'ace') {
-               p.aces++;
-               gameState.stats[team].aces++;
-               addScore(team, 1, playerName);
+               p.aces = (p.aces || 0) + increment;
+               if (p.aces < 0) p.aces = 0;
+               gameState.stats[team].aces = (gameState.stats[team].aces || 0) + increment;
+               if (gameState.stats[team].aces < 0) gameState.stats[team].aces = 0;
+               
+               // Connect serve count - when ace is incremented/decremented, also update serve
+               p.serves = (p.serves || 0) + increment;
+               if (p.serves < 0) p.serves = 0;
+               gameState.stats[team].serves = (gameState.stats[team].serves || 0) + increment;
+               if (gameState.stats[team].serves < 0) gameState.stats[team].serves = 0;
+               
+               // Only add score when incrementing ace (not decrementing)
+               if (increment > 0) {
+                   addScore(team, increment, playerName);
+               } else if (increment < 0) {
+                   // When decrementing ace, also decrement score
+                   addScore(team, increment, playerName);
+               }
            } else if (stat === 'block') {
-               p.blocks++;
-               gameState.stats[team].blocks++;
+               p.blocks = (p.blocks || 0) + increment;
+               if (p.blocks < 0) p.blocks = 0;
+               gameState.stats[team].blocks = (gameState.stats[team].blocks || 0) + increment;
+               if (gameState.stats[team].blocks < 0) gameState.stats[team].blocks = 0;
+               
+               // Add/remove score when block is incremented/decremented
+               addScore(team, increment, playerName);
            } else if (stat === 'spike') {
-               p.spikes++;
-               gameState.stats[team].spikes++;
+               p.spikes = (p.spikes || 0) + increment;
+               if (p.spikes < 0) p.spikes = 0;
+               gameState.stats[team].spikes = (gameState.stats[team].spikes || 0) + increment;
+               if (gameState.stats[team].spikes < 0) gameState.stats[team].spikes = 0;
+               
+               // Add/remove score when spike is incremented/decremented
+               addScore(team, increment, playerName);
            }
            updateStatsDisplay();
            syncToFirebase();
@@ -615,6 +678,9 @@
            console.log('Page loaded, initializing Firebase connection...');
            subscribeToRealtimeGame();
            console.log('Firebase Realtime Database subscription active. Listening to /currentGame');
+           
+           // Initialize buttons immediately so they're ready when page loads
+           createScoringButtons();
        });
    </script>
 </head>
