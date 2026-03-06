@@ -3,14 +3,13 @@ import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase
 import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
 import { getFirestore, collection, doc, setDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 const firebaseConfig = {
-    apiKey: "AIzaSyBpkEnq2Kjotqm9Ukk2Cklj6ACZjWq1dEY",
-    authDomain: "iacs-95ea7.firebaseapp.com",
-    databaseURL: "https://iacs-95ea7-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "iacs-95ea7",
-    storageBucket: "iacs-95ea7.firebasestorage.app",
-    messagingSenderId: "413625128566",
-    appId: "1:413625128566:web:b7499fd9a6e58d42203157",
-    measurementId: "G-2ZKQ8M550N"
+  apiKey: "AIzaSyDlhOu0RANZMd4LViEgKEXA4MDy4OQnMkw",
+  authDomain: "studio-6675617369-e0d3f.firebaseapp.com",
+  databaseURL: "https://studio-6675617369-e0d3f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "studio-6675617369-e0d3f",
+  storageBucket: "studio-6675617369-e0d3f.firebasestorage.app",
+  messagingSenderId: "194010478063",
+  appId: "1:194010478063:web:bdb62eeb929ae48b74321a"
 };
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
@@ -457,15 +456,10 @@ async function loadPreviousGameState() {
    try {
        const snapshot = await get(realtimePreviousGameRef);
        if (snapshot.exists()) {
-           renderPreviousGame(snapshot.val());
-       } else {
-           renderPreviousGame(null);
-       }
-   } catch (err) {
-       console.error('Error loading previous game:', err);
-   }
-}
-
+            renderPreviousGame(snapshot.val());}
+            else {renderPreviousGame(null);}}
+            catch (err) {
+       console.error('Error loading previous game:', err);}}
 async function savePreviousGameSnapshot() {
    const snapshot = JSON.parse(JSON.stringify({
        ...gameState,
@@ -473,27 +467,20 @@ async function savePreviousGameSnapshot() {
        isActive: false
    }));
    await set(realtimePreviousGameRef, snapshot);
-   renderPreviousGame(snapshot);
-}
-
+   renderPreviousGame(snapshot);}
 function downloadStatsToCSV() {
     if (!gameState.isActive) {
         alert('No active game to download.');
         return;
     }
-
-    function escapeCSV(value) {
+function escapeCSV(value) {
         if (value === null || value === undefined) return '';
         const stringValue = String(value);
         if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
-            return '"' + stringValue.replace(/"/g, '""') + '"';
-        }
-        return stringValue;
-    }
-
+        return '"' + stringValue.replace(/"/g, '""') + '"';}
+        return stringValue;}
     const team1Label = gameState.teams.team1.id;
     const team2Label = gameState.teams.team2.id;
-
     let csv = '';
     if (gameState.players.team1 && Object.keys(gameState.players.team1).length > 0) {
         csv += `${escapeCSV(team1Label)} Player Statistics\n`;
@@ -501,9 +488,7 @@ function downloadStatsToCSV() {
     
         Object.keys(gameState.players.team1).forEach(function(playerName) {
             const player = gameState.players.team1[playerName];
-            csv += `${escapeCSV(playerName)},${player.serves || 0},${player.aces || 0},${player.blocks || 0},${player.spikes || 0},${player.points || 0}\n`;
-        });
-    
+            csv += `${escapeCSV(playerName)},${player.serves || 0},${player.aces || 0},${player.blocks || 0},${player.spikes || 0},${player.points || 0}\n`;});
         csv += '\n';
     }
     if (gameState.players.team2 && Object.keys(gameState.players.team2).length > 0) {
@@ -669,28 +654,20 @@ async function loadInitialGameState() {
                     document.getElementById('game-panel')?.classList.remove('hidden');
                     createScoringButtons();}
                 updateGameDisplay();
-            
-                console.log('✓ Initial game state loaded from Firebase');
-            }
-        } else {
-            console.log('No existing game state found in database');
-        }
-    } catch (error) {
-        console.error('Error loading initial game state:', error);
-    }
-}
+                console.log('✓ Initial game state loaded from Firebase');}}
+                else {
+                console.log('No existing game state found in database');} } catch (error) {
+            console.error('Error loading initial game state:', error);
+        }}
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Page loaded, initializing Firebase connection...');
   
    loadInitialGameState();
    loadPreviousGameState();
-  
     subscribeToRealtimeGame();
     console.log('Firebase Realtime Database subscription active. Listening to /currentGame');
-  
     createScoringButtons();
-  
     setInterval(() => {
         if (gameState.isActive) {
     
